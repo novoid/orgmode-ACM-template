@@ -1,0 +1,142 @@
+#+TITLE:     A Sample {\ttlit ACM} SIG Proceedings Paper in Org-mode Format
+#+NOAuthor:    Karl Voit
+#+EMAIL:     Karl.Voit@IST.TUGraz.at
+#+DESCRIPTION: 
+#+KEYWORDS: Open Science, Reproducible Research
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT: 
+#+STARTUP: overview
+#+FILETAGS: RESEARCH
+
+#+COMMENT: ================================================
+#+COMMENT:         Not covered yet in Org-mode
+#+COMMENT: ================================================
+#+COMMENT: \subtitle{[Extended Abstract]
+#+COMMENT: \titlenote{A full version of this paper is available as
+#+COMMENT: \textit{Author's Guide to Preparing ACM SIG Proceedings Using
+#+COMMENT: \LaTeX$2_\epsilon$\ and BibTeX} at
+#+COMMENT: \texttt{www.acm.org/eaddress.htm}}}
+
+
+#+name: setup
+#+begin_src emacs-lisp :results silent :exports none
+(unless (find "per-file-class" org-export-latex-classes :key 'car
+          :test 'equal)
+  (add-to-list 'org-export-latex-classes
+           '("per-file-class"
+              "\\documentclass{acm_proc_article-sp}
+              [NO-DEFAULT-PACKAGES]
+              [EXTRA]"
+              ("\\section{%s}" . "\\section*{%s}")
+              ("\\subsection{%s}" . "\\subsection*{%s}")
+              ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+              ("\\paragraph{%s}" . "\\paragraph*{%s}")
+              ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+#+noBIND: org-export-latex-title-command ""
+
+#+LaTeX_CLASS: per-file-class
+
+#+LaTeX_HEADER: \usepackage{times}
+#+LaTeX_HEADER: \usepackage[utf8]{inputenc}    % allow direct input of special chars
+
+#+LaTeX_HEADER:   \usepackage[         % hyperref should be last package loaded
+#+LaTeX_HEADER:     pdftex,
+#+LaTeX_HEADER:     pdftitle={FIXXME: title},
+#+LaTeX_HEADER:     pdfsubject={Open Science, Reproducible Research},
+#+LaTeX_HEADER:     pdfauthor={Karl Voit},
+#+LaTeX_HEADER:     pdfkeywords={Open Science, Reproducible Research, Org-mode, Emacs, Tools},
+#+LaTeX_HEADER:     bookmarks,
+#+LaTeX_HEADER:     bookmarksnumbered,
+#+LaTeX_HEADER:     pdftex=true,
+#+LaTeX_HEADER:     colorlinks,
+#+LaTeX_HEADER:     linkcolor=darkblue,
+#+LaTeX_HEADER:     anchorcolor=darkblue,
+#+LaTeX_HEADER:     citecolor=darkgreen,
+#+LaTeX_HEADER:     urlcolor=darkblue,
+#+LaTeX_HEADER:     pdfview={FitH},
+#+LaTeX_HEADER:     pdfstartview={Fit},
+#+LaTeX_HEADER:     pdfpagemode=UseOutlines,       % open bookmarks in Acrobat
+#+LaTeX_HEADER:     plainpages=false,              % avoids duplicate page number problem
+#+LaTeX_HEADER: %   pdfpagelabels,                 % avoids duplicate page number problem
+#+LaTeX_HEADER:   ]{hyperref}
+#+LaTeX_HEADER: 
+
+
+#+LaTeX_HEADER: \numberofauthors{3} %  in this sample file, there are a *total*
+#+LaTeX_HEADER: 
+#+LaTeX_HEADER: \author{
+#+LaTeX_HEADER: % 1st. author
+#+LaTeX_HEADER: \alignauthor
+#+LaTeX_HEADER: Ben Trovato\titlenote{Dr.~Trovato insisted his name be first.}\\
+#+LaTeX_HEADER:        \affaddr{Institute for Clarity in Documentation}\\
+#+LaTeX_HEADER:        \affaddr{1932 Wallamaloo Lane}\\
+#+LaTeX_HEADER:        \affaddr{Wallamaloo, New Zealand}\\
+#+LaTeX_HEADER:        \email{trovato@corporation.com}
+#+LaTeX_HEADER: % 2nd. author
+#+LaTeX_HEADER: \alignauthor
+#+LaTeX_HEADER: G.K.M. Tobin\titlenote{The secretary disavows
+#+LaTeX_HEADER: any knowledge of this author's actions.}\\
+#+LaTeX_HEADER:        \affaddr{Institute for Clarity in Documentation}\\
+#+LaTeX_HEADER:        \affaddr{P.O. Box 1212}\\
+#+LaTeX_HEADER:        \affaddr{Dublin, Ohio 43017-6221}\\
+#+LaTeX_HEADER:        \email{webmaster@marysville-ohio.com}
+#+LaTeX_HEADER: % 3rd. author
+#+LaTeX_HEADER: \alignauthor Lars Th{\o}rv{\"a}ld\titlenote{This author is the
+#+LaTeX_HEADER: one who did all the really hard work.}\\
+#+LaTeX_HEADER:        \affaddr{The Th{\o}rv{\"a}ld Group}\\
+#+LaTeX_HEADER:        \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
+#+LaTeX_HEADER:        \affaddr{Hekla, Iceland}\\
+#+LaTeX_HEADER:        \email{larst@affiliation.org}
+#+LaTeX_HEADER: }
+#+LaTeX_HEADER: 
+
+
+
+#+BEGIN_ABSTRACT
+This paper provides a sample of a \LaTeX\ document which resembles the
+style of original ACM LaTeX template ``Option 1: LaTeX2e - Strict
+Adherence to SIGS style''. The focus on this template is the usage
+with Emacs Org-mode\footnote{\texttt{http://orgmode.org}}. Therefore
+the content is reduced to a minimum.
+#+END_ABSTRACT
+
+
+% A category with the (minimum) three required fields
+\category{H.4}{Information Systems Applications}{Miscellaneous}
+%A category including the fourth, optional field follows...
+\category{D.2.8}{Software Engineering}{Metrics}[complexity measures, performance measures]
+
+\terms{Theory}
+
+\keywords{ACM proceedings, \LaTeX, text tagging}
+
+* Introduction
+
+
+** Citations
+
+In the beautiful paper~\cite{Voit2012a} the authors shows that tagging
+need not to be slower than filing in folders.
+
+** Tables
+
+** Figures
+
+** Theorem-like Constructs
+
+* Conclusions
+
+* Acknowledgments
+
+\bibliographystyle{abbrv}
+\bibliography{references}  
+

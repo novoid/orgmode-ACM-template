@@ -1,0 +1,11 @@
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+20*rev*.pdf
+*.synctex.gz
+auto/*
+main.pdf
+LKFS
+hawaii-colonization

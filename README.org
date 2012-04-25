@@ -1,0 +1,11 @@
+* Migrating ACM LaTeX template to Org-mode
+
+Source: http://www.acm.org/sigs/publications/proceedings-templates
+
+The template should be as much self-containing as possible. So no
+special settings required in ~$HOME/.emacs~
+
+* Issues
+
+- Karl 2012-04-25: new Org-mode export does nothing but writing
+  "org-splice-latex-header: Wrong type argument: stringp, nil"
