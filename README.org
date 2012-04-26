@@ -1,6 +1,18 @@
 * Migrating ACM LaTeX template to Org-mode
 
-Source: http://www.acm.org/sigs/publications/proceedings-templates
+** Purpose
+
+Whenever someone wants to hand in a white paper for a
+conference which requires using ACM LaTeX template, I want to use an
+Org-mode file instead. With the Org-mode LaTeX exporter (the current
+one and/or the new one) is should be possible to generate compatible
+TeX and PDF output.
+
+** Template Source
+
+http://www.acm.org/sigs/publications/proceedings-templates
+
+** Additional requirements
 
 The template should be as much self-containing as possible. So no
 special settings required in ~$HOME/.emacs~
