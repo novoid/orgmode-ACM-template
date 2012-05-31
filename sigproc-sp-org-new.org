@@ -1,0 +1,931 @@
+#+TITLE:
+#+KEYWORDS: Open Science, Reproducible Research
+#+LANGUAGE:  en
+#+OPTIONS: H:5 author:nil email:nil creator:nil timestamp:nil skip:nil toc:nil
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+STARTUP: overview
+#+FILETAGS: RESEARCH
+
+# THIS IS SIGPROC-SP.TEX - VERSION 3.1
+# WORKS WITH V3.2SP OF ACM_PROC_ARTICLE-SP.CLS
+# APRIL 2009
+#
+# It is an example file showing how to use the 'acm_proc_article-sp.cls' V3.2SP
+# LaTeX2e document class file for Conference Proceedings submissions.
+# ----------------------------------------------------------------------------------------------------------------
+# This .tex file (and associated .cls V3.2SP) *DOES NOT* produce:
+#       1) The Permission Statement
+#       2) The Conference (location) Info information
+#       3) The Copyright Line with ACM data
+#       4) Page numbering
+# ---------------------------------------------------------------------------------------------------------------
+# It is an example which *does* use the .bib file (from which the .bbl file
+# is produced).
+# REMEMBER HOWEVER: After having produced the .bbl file,
+# and prior to final submission,
+# you need to 'insert'  your .bbl file into your source .tex file so as to provide
+# ONE 'self-contained' source file.
+#
+# Questions regarding SIGS should be sent to
+# Adrienne Griscti ---> griscti@acm.org
+# Questions/suggestions regarding the guidelines, .tex and .cls files, etc. to
+#
+# Gerald Murray ---> murray@hq.acm.org
+#
+# For tracking purposes - this is V3.1SP - APRIL 2009
+
+#+LaTeX_CLASS: acm-proc-article-sp
+
+
+#+BEGIN_LaTeX
+\title{A Sample {\ttlit ACM} SIG Proceedings Paper in Org-mode Format\titlenote{(Does NOT produce the permission block, copyright information nor page numbering). For use with ACM\_PROC\_ARTICLE-SP.CLS. Supported by ACM.}}
+\subtitle{[Extended Abstract]\titlenote{A full version of this paper is available as
+\textit{Author's Guide to Preparing ACM SIG Proceedings Using
+\LaTeX$2_\epsilon$\ and BibTeX} at
+\texttt{www.acm.org/eaddress.htm}}}
+#+END_LaTeX
+
+# Note that add-author-record isn't fully correct.  It formats a comma
+# separated list, when it should return a list with the final element
+# separated by "and".
+
+#+name: author-list
+#+header: :var authors=authorlist
+#+header: :var add-authors=additional-authors
+#+header: :results latex 
+#+header: :exports results
+#+BEGIN_SRC emacs-lisp
+    (defun author-record (r)
+      (if (> (length (first r)) 0)
+            (format "\\alignauthor\n%s\\titlenote{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\email{%s}" (first r) (second r) (third r) (fourth r) (fifth r)
+          (sixth r))
+        "\\and")
+    )
+    
+  (defun non-empty (list)
+    (let ( (i 0))
+    (mapcar #'(lambda (elem)
+                (if (> (length (first elem)) 0)
+                  (incf i)))
+            list)
+    i)
+  )
+    
+    (defun add-author-record (r)
+      (format "%s (%s, email:
+        {\\texttt{%s}})" 
+              (first r) (second r) (third r)))
+    
+    (let ( (i (+ (non-empty (cdr (cdr authors))) (- (length add-authors) 2) ))
+           (a (mapcar (lambda (row)
+                        (author-record row)) 
+                      (cdr (cdr authors))))
+           (b (mapcar (lambda (row)
+                        (add-author-record row)) 
+                      (cdr (cdr add-authors))))
+           )
+      (concat
+       (format "\\numberofauthors{%s}\n\\author{\n" i)
+       (mapconcat 'identity a "\n")
+       "}"
+       (if (> (length add-authors) 0)
+           (concat "\n\\additionalauthors{Additional authors: "
+                   (mapconcat 'identity b ", ")
+                   ".}")
+         ())))
+          
+#+END_SRC
+
+#+RESULTS: author-list
+#+BEGIN_LaTeX
+\numberofauthors{8}
+\author{
+\alignauthor
+Ben Trovato\titlenote{Dr.~Trovato insisted his name be first.}\\
+        \affaddr{Institute for Clarity in Documentation}\\
+        \affaddr{1932 Wallamaloo Lane}\\
+        \affaddr{Wallamaloo, New Zealand}\\
+        \email{trovato@corporation.com}
+\alignauthor
+G.K.M. Tobin\titlenote{The secretary disavows any knowledge of this author's actions.}\\
+        \affaddr{Institute for Clarity in Documentation}\\
+        \affaddr{P.O. Box 1212}\\
+        \affaddr{Dublin, Ohio 43017-6221}\\
+        \email{webmaster@marysville-ohio.com}
+\alignauthor
+Lars Th{\o}rv{\"a}ld\titlenote{This author is the one who did all the really hard work.}\\
+        \affaddr{The Th{\o}rv{\"a}ld Group}\\
+        \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
+        \affaddr{Hekla, Iceland}\\
+        \email{larst@affiliation.org}
+\and
+\alignauthor
+Lawrence P. Leipuner\titlenote{}\\
+        \affaddr{Brookhaven Laboratories}\\
+        \affaddr{Brookhaven National Lab}\\
+        \affaddr{P.O. Box 5000}\\
+        \email{lleipuner@reasearchlabs.org}
+\alignauthor
+Sean Fogarty\titlenote{}\\
+        \affaddr{NASA Ames Research Center}\\
+        \affaddr{Moffett Field}\\
+        \affaddr{California 94035}\\
+        \email{fogarty@amesres.org}
+\alignauthor
+Charles Palmer\titlenote{}\\
+        \affaddr{Palmer Research Laboratories}\\
+        \affaddr{8600 Datapoint Drive}\\
+        \affaddr{San Antonio, Texas 78229}\\
+        \email{cpalmer@prl.com}}
+\additionalauthors{Additional authors: John Smith (The Th{\o}rv{\"a}ld Group, email:
+      {\texttt{jsmith@affiliation.org}}), Julius P. Kumquat (The Kumquat Consortium, email:
+      {\texttt{jpkumquat@consortium}}).}
+#+END_LaTeX
+
+\maketitle
+
+#+BEGIN_abstract
+This paper provides a sample of a LaTeX document which resembles the
+style of original ACM LaTeX template ``Option 1: LaTeX2e - Strict
+Adherence to SIGS style''. The focus on this template is the usage
+with Emacs Org-mode. Therefore the content is reduced to a minimum.
+#+END_abstract
+
+#+name: ACM-categories
+#+header: :var c=categories
+#+header: :results latex 
+#+header: :exports results
+#+BEGIN_SRC emacs-lisp
+  (defun category-record (r)
+    (format "\\category{%s}{%s}{%s}[%s]" 
+            (first r) (second r) (third r) (fourth r)))
+  (let ( (i (mapcar (lambda (row)
+            (category-record row))
+          (cdr (cdr c)))))
+     (mapconcat 'identity i "\n")
+)
+#+END_SRC
+
+#+RESULTS: ACM-categories
+#+BEGIN_LaTeX
+\category{H.4}{Information Systems Applications}{Miscellaneous}[]
+\category{D.2.8}{Software Engineering}{Metrics}[complexity measures, performance measures]
+#+END_LaTeX
+
+#+CALL: list-to-cs-string(in-command="terms", in-list=term-list) :results latex :exports results
+
+#+RESULTS: list-to-cs-string(in-command="terms", in-list=term-list):results latex :exports results
+#+BEGIN_LaTeX
+\terms{Theory}
+#+END_LaTeX
+
+#+CALL: list-to-cs-string(in-command="keywords", in-list=keyword-list) :results latex :exports results
+
+#+RESULTS: list-to-cs-string(in-command="keywords", in-list=keyword-list):results latex :exports results
+#+BEGIN_LaTeX
+\keywords{ACM Proceedings, \LaTeX, text tagging}
+#+END_LaTeX
+
+
+* Introduction
+
+The /proceedings/ are the records of a conference.
+ACM seeks to give these conference by-products a uniform,
+high-quality appearance.  To do this, ACM has some rigid
+requirements for the format of the proceedings documents: there
+is a specified format (balanced  double columns), a specified
+set of fonts (Arial or Helvetica and Times Roman) in
+certain specified sizes (for instance, 9 point for body copy),
+a specified live area (18 $\times$ 23.5 cm [7" $\times$ 9.25"]) centered on
+the page, specified size of margins (1.9 cm [0.75"]) top, (2.54 cm [1"]) bottom
+and (1.9 cm [.75"]) left and right; specified column width
+(8.45 cm [3.33"]) and gutter size (.83 cm [.33"]).
+
+The good news is, with only a handful of manual settings[fn:1], the
+LaTeX document class file handles all of this for you.
+
+The remainder of this document is concerned with showing, in
+the context of an "actual" document, the LaTeX commands
+specifically available for denoting the structure of a
+proceedings paper, rather than with giving rigorous descriptions
+or explanations of such commands.
+* The [[acm:secit][Body]] of The Paper
+
+Typically, the body of a paper is organized into a hierarchical
+structure, with numbered or unnumbered headings for sections,
+subsections, sub-subsections, and even smaller sections.  The command
+=\section= that precedes this paragraph is part of such a
+hierarchy.[fn:2] LaTeX handles the numbering and placement of these
+headings for you, when you use the appropriate heading commands around
+the titles of the headings.  If you want a sub-subsection or smaller
+part to be unnumbered in your output, simply append an asterisk to the
+command name.  Examples of both numbered and unnumbered headings will
+appear throughout the balance of this sample document.
+
+Because the entire article is contained in the *document* environment,
+you can indicate the start of a new paragraph with a blank line in
+your input file; that is why this sentence forms a separate paragraph.
+
+** Type Changes and [[acm:subsecit][Special]] Characters
+
+We have already seen several typeface changes in this sample.  You can
+indicate italicized words or phrases in your text with the command
+/italics/; emboldening with the command *bold* and typewriter-style
+(for instance, for computer code) with =typewriter style=.  But
+remember, you do not have to indicate typestyle changes when such
+changes are part of the /structural/ elements of your article; for
+instance, the heading of this subsection will be in a sans serif[fn:3]
+typeface, but that is handled by the document class file. Take care
+with the use of[fn:4] the curly braces in typeface changes; they mark
+the beginning and end of the text that is to be in the different
+typeface.
+
+You can use whatever symbols, accented characters, or non-English
+characters you need anywhere in your document; you can find a complete
+list of what is available in the /LaTeX User's Guide/ [[cite:Lamport:LaTeX][(Lamport LaTeX)]].
+
+
+** Math Equations
+You may want to display math equations in three distinct styles:
+inline, numbered or non-numbered display.  Each of
+the three are discussed in the next sections.
+*** Inline (In-text) Equations
+A formula that appears in the running text is called an inline or
+in-text formula.  It is produced by the *math* environment, which can
+be invoked with the usual =\begin. . .\end= construction or with the
+short form =\(. . .\)=. You can use any of the symbols and structures,
+from $\alpha$ to $\omega$, available in LaTeX[[cite:Lamport:LaTeX][(Lamport LaTeX)]]; this
+section will simply show a few examples of in-text equations in
+context. Notice how this equation: \( \lim_{n\rightarrow \infty}x=0 \), set here in in-line math style, looks slightly different when set
+in display style.  (See next section).
+*** Display Equations
+A numbered display equation -- one set off by vertical space from the
+text and centered horizontally -- is produced by the *equation*
+environment. An unnumbered display equation is produced by the
+*displaymath* environment.
+
+Again, in either environment, you can use any of the symbols
+and structures available in LaTeX; this section will just
+give a couple of examples of display equations in context.
+First, consider the equation, shown as an inline equation above:
+# \begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
+Notice how it is formatted somewhat differently in
+the *displaymath*
+environment.  Now, we'll enter an unnumbered equation:
+\begin{displaymath}
+\sum_{i=0}^{\infty} x + 1
+\end{displaymath}
+and follow it with another numbered equation:
+\begin{equation}
+\sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f
+\end{equation}
+just to demonstrate \LaTeX's able handling of numbering.
+
+** Citations
+Citations to articles [[cite:bowman:reasoning, clark:pct, braams:babel, herlihy:methodology][(Long list)]], conference proceedings [[cite:clark:pct][(Clark)]] or
+books [[cite:salas:calculus, Lamport:LaTeX][(Book citations)]] listed in the Bibliography section of your
+article will occur throughout the text of your article.  You should
+use BibTeX to automatically produce this bibliography; you simply need
+to insert one of several citation commands with a key of the item
+cited in the proper location in the =.tex= file [[cite:Lamport:LaTeX][(Lapmport LaTeX)]].  The
+key is a short reference you invent to uniquely identify each work; in
+this sample document, the key is the first author's surname and a word
+from the title.  This identifying key is included with each item in
+the =.bib= file for your article.
+
+The details of the construction of the =.bib= file are beyond the
+scope of this sample document, but more information can be found in
+the /Author's Guide/, and exhaustive details in the /LaTeX User's
+Guide/ [[cite:Lamport:LaTeX][(Lamport LaTeX)]].
+
+This article shows only the plainest form of the citation command,
+using =\cite=.  This is what is stipulated in the SIGS style
+specifications.  No other citation format is endorsed.
+
+** Tables
+Because tables cannot be split across pages, the best placement for
+them is typically the top of the page nearest their initial cite.  To
+ensure this proper "floating" placement of tables, use the
+environment *table* to enclose the table's contents and the table
+caption.  The contents of the table itself must go in the *tabular*
+environment, to be aligned properly in rows and columns, with the
+desired horizontal and vertical rules.  Again, detailed instructions
+on *tabular* material is found in the /LaTeX User's Guide/.
+
+Immediately following this sentence is the point at which Table 1 is
+included in the input file; compare the placement of the table here
+with the table in the printed dvi output of this document.
+
+# \begin{table}
+# \centering
+# \caption{Frequency of Special Characters}
+# \begin{tabular}{|c|c|l|} \hline
+# Non-English or Math&Frequency&Comments\\ \hline
+# \O & 1 in 1,000& For Swedish names\\ \hline
+# $\pi$ & 1 in 5& Common in math\\ \hline
+# \$ & 4 in 5 & Used in business\\ \hline
+# $\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
+# \hline\end{tabular}
+# \end{table}
+
+# Note that there can be no space between these attribute lines or
+# between the attribute lines and the following table.
+
+#+CAPTION: Frequency of Special Characters
+#+ATTR_LaTeX: align=|c|c|l|
+|---------------------+-------------+-------------------|
+| Non-English or Math | Frequency   | Comments          |
+|---------------------+-------------+-------------------|
+| \O                  | 1 in 1,000  | For Swedish names |
+|---------------------+-------------+-------------------|
+| $\pi$               | 1 in 5      | Common in math    |
+|---------------------+-------------+-------------------|
+| \$                  | 4 in 5      | Used in business  |
+|---------------------+-------------+-------------------|
+| $\Psi^2_1$          | 1 in 40,000 | Unexplained usage |
+|---------------------+-------------+-------------------|
+
+To set a wider table, which takes up the whole width of the page's
+live area, use the environment *table\** to enclose the table's
+contents and the table caption.  As with a single-column table, this
+wide table will "float" to a location deemed more desirable.
+Immediately following this sentence is the point at which Table 2 is
+included in the input file; again, it is instructive to compare the
+placement of the table here with the table in the printed dvi output
+of this document.
+
+
+# \begin{table*}
+# \centering
+# \caption{Some Typical Commands}
+# \begin{tabular}{|c|c|l|} \hline
+# Command&A Number&Comments\\ \hline
+# \texttt{{\char'134}alignauthor} & 100& Author alignment\\ \hline
+# \texttt{{\char'134}numberofauthors}& 200& Author enumeration\\ \hline
+# \texttt{{\char'134}table}& 300 & For tables\\ \hline
+# \texttt{{\char'134}table*}& 400& For wider tables\\ \hline\end{tabular}
+# \end{table*}
+# end the environment with {table*}, NOTE not {table}!
+
+#+CAPTION: Some Typical Commands
+#+ATTR_LaTeX: table* align=|c|c|l|
+|--------------------+----------+--------------------|
+| Command            | A Number | Comments           |
+|--------------------+----------+--------------------|
+| =\alignauthor=     |      100 | Author alignment   |
+|--------------------+----------+--------------------|
+| =\numberofauthors= |      200 | Author enumeration |
+|--------------------+----------+--------------------|
+| =\table=           |      300 | For tables         |
+|--------------------+----------+--------------------|
+| =\table*=          |      400 | For wider tables   |
+|--------------------+----------+--------------------|
+
+** Figures
+
+Like tables, figures cannot be split across pages; the best placement
+for them is typically the top or the bottom of the page nearest their
+initial cite.  To ensure this proper "floating" placement of figures,
+use the environment *figure* to enclose the figure and its caption.
+
+This sample document contains examples of *.eps*
+and *.ps* files to be displayable with LaTeX.  More
+details on each of these is found in the /Author's Guide/.
+
+#+CAPTION: A sample black and white graphic (.eps format).
+#+ATTR_LaTeX: width=\linewidth
+[[file:fly.eps]]
+
+#+CAPTION: A sample black and white graphic (.eps format) that has been resized.
+#+ATTR_LaTeX: width=1in
+[[file:flies.eps]]
+
+#+BEGIN_COMMENT
+\begin{figure}
+\centering
+\epsfig{file=fly.eps}
+\caption{A sample black and white graphic (.eps format).}
+\end{figure}
+
+\begin{figure}
+\centering
+\epsfig{file=fly.eps, height=1in, width=1in}
+\caption{A sample black and white graphic (.eps format)
+that has been resized with the \texttt{epsfig} command.}
+\end{figure}
+#+END_COMMENT
+
+As was the case with tables, you may want a figure
+that spans two columns.  To do this, and still to
+ensure proper ``floating'' placement of tables, use the environment
+*figure\** to enclose the figure and its caption.
+
+Note that either *.ps* or *.eps* formats are used; use the =\epsfig=
+or =\psfig= commands as appropriate for the different file types.
+
+** Theorem-like Constructs
+Other common constructs that may occur in your article are the forms
+for logical constructs like theorems, axioms, corollaries and proofs.
+There are two forms, one produced by the command =\newtheorem= and the
+other by the command =\newdef=; perhaps the clearest and easiest way
+to distinguish them is to compare the two in the output of this sample
+document:
+
+This uses the *theorem* environment, created by the =\newtheorem= command:
+\newtheorem{theorem}{Theorem}
+\begin{theorem}
+Let $f$ be continuous on $[a,b]$.  If $G$ is
+an antiderivative for $f$ on $[a,b]$, then
+\begin{displaymath}\int^b_af(t)dt = G(b) - G(a).\end{displaymath}
+\end{theorem}
+
+
+The other uses the *definition* environment, created
+by the =\newdef= command:
+\newdef{definition}{Definition}
+\begin{definition}
+If $z$ is irrational, then by $e^z$ we mean the
+unique number which has
+logarithm $z$: \begin{displaymath}{\log e^z = z}\end{displaymath}
+\end{definition}
+
+#+CAPTION: A sample black and white graphic (.eps format) that needs to span two columns of text.
+#+ATTR_LaTeX: multicolumn
+[[file:flies.eps]]
+
+
+#+BEGIN_COMMENT
+
+\begin{figure}
+\centering
+\psfig{file=rosette.ps, height=1in, width=1in,}
+\caption{A sample black and white graphic (.ps format) that has
+been resized with the \texttt{psfig} command.}
+\end{figure}
+
+Two lists of constructs that use one of these
+forms is given in the
+/Author's  Guidelines/.
+
+\begin{figure*}
+\centering
+\epsfig{file=flies.eps}
+\caption{A sample black and white graphic (.eps format)
+that needs to span two columns of text.}
+\end{figure*}
+and don't forget to end the environment with
+{figure*}, not {figure}!
+ 
+#+END_COMMENT
+
+There is one other similar construct environment, which is already set
+up for you; i.e. you must /not/ use a =newdef= command to create it:
+the *proof* environment.  Here is a example of its use:
+#+BEGIN_proof
+Suppose on the contrary there exists a real number $L$ such that
+\begin{displaymath}
+\lim_{x\rightarrow\infty} \frac{f(x)}{g(x)} = L.
+\end{displaymath}
+Then
+\begin{displaymath}
+l=\lim_{x\rightarrow c} f(x)
+= \lim_{x\rightarrow c}
+\left[ g{x} \cdot \frac{f(x)}{g(x)} \right ]
+= \lim_{x\rightarrow c} g(x) \cdot \lim_{x\rightarrow c}
+\frac{f(x)}{g(x)} = 0\cdot L = 0,
+\end{displaymath}
+which contradicts our assumption that $l\neq 0$.
+#+END_proof
+
+Complete rules about using these environments and using the two
+different creation commands are in the /Author's Guide/; please
+consult it for more detailed instructions.  If you need to use another
+construct, not listed therein, which you want to have the same
+formatting as the Theorem or the Definition[[cite:salas:calculus][(Salas Calculus)]] shown
+above, use the =\newtheorem= or the =\newdef= command, respectively,
+to create it.
+** A [[acm:secit][Caveat]] for the TeX Expert
+#+COMMENT: This should be \subsection*.
+Because you have just been given permission to use the =newdef=
+command to create a new form, you might think you can use \TeX's
+=def= to create a new command: /Please refrain from doing this!/
+Remember that your LaTeX source code is primarily intended to create
+camera-ready copy, but may be converted to other forms --
+e.g. HTML. If you inadvertently omit some or all of the =\def= s
+recompilation will be, to say the least, problematic.
+
+* Conclusions
+This paragraph will end the body of this sample document.
+Remember that you might still have Acknowledgments or
+Appendices; brief samples of these
+follow.  There is still the Bibliography to deal with; and
+we will make a disclaimer about that here: with the exception
+of the reference to the LaTeX book, the citations in
+this paper are to articles which have nothing to
+do with the present subject and are used as
+examples only.
+
+* Acknowledgments
+This section is optional; it is a location for you to acknowledge
+grants, funding, editing assistance and what have you.  In the present
+case, for example, the authors would like to thank Gerald Murray of
+ACM for his help in codifying this /Author's Guide/ and the *.cls* and
+*.tex* files that it describes.
+
+
+\bibliographystyle{abbrv}
+\bibliography{sigproc}  
+
+\appendix
+
+* Headings in Appendices
+The rules about hierarchical headings discussed above for the body of
+the article are different in the appendices.  In the *appendix*
+environment, the command *section* is used to indicate the start of
+each Appendix, with alphabetic order designation (i.e. the first is A,
+the second B, etc.) and a title (if you include one).  So, if you need
+hierarchical structure /within/ an Appendix, start with *subsection*
+as the highest level. Here is an outline of the body of this document
+in Appendix-appropriate form:
+** Introduction
+** The Body of the Paper
+*** Type Changes and Special Characters
+*** Math Equations
+**** Inline (In-text) Equations
+**** Display Equations
+*** Citations
+*** Tables
+*** Figures
+*** Theorem-like Constructs
+*** A Caveat for the TeX Expert
+#+COMMENT: Should be \subsubsection*
+** Conclusions
+** Acknowledgements
+** Additional Authors
+This section is inserted by LaTeX; you do not insert it.
+You just add the names and information in the
+=\additionalauthors= command at the start
+of the document.
+** References
+Generated by bibtex from your ~.bib file.  Run latex, then bibtex,
+then latex twice (to resolve references) to create the ~.bbl file.
+Insert that ~.bbl file into the .tex source file and comment out the
+command =\thebibliography=.
+* More Help for the Hardy
+The acm\_proc\_article-sp document class file itself is chock-full of
+succinct and helpful comments.  If you consider yourself a moderately
+experienced to expert user of LaTeX, you may find reading it useful
+but please remember not to change it.
+
+\balancecolumns
+* Setup                                                            :noexport:
+
+** Instructions for use
+   - Tangle initialization files, by entering C-c C-v t with the
+     cursor anywhere in this buffer.  This will tangle two
+     files, =init-old.el= and =init-new.el=, one for the old exporter
+     and one for the new exporter.
+   - Generate the [[Configure%20makefile][Makefile]], by placing the cursor in the source code
+     block and entering C-c C-c.  Depending on the values assigned to
+     its variables, this code will generate a Makefile suited for the
+     old exporter or the new exporter. 
+   - In a terminal, change to the project directory and run =make=.
+     This will launch a new instance of emacs, initialize Org-mode,
+     export this file and create a pdf file in ACM-SIG format.
+
+** Initialization file for new exporter
+
+
+This source code block tangles the initialization file that configures
+the old Org-mode LaTeX exporter.
+
+You might need to change this for your system:
+   - Check =load-path= settings
+   - Make sure the languages used in your source code blocks have been
+     loaded with =org-babel-load-languages=
+
+An org-entity, =\space=, has been added, which can be used after a
+period that doesn't end a sentence, e.g., "Dr.\space Martin Luther King"
+
+A link type, =cite=, is defined for citations.  See the text for how
+to insert a citation.  Note that AucTeX and ebib can be configured to
+insert the citation correctly.
+
+A link type, =acm=, is defined to insert ACM-specific commands used to
+italicize words in section headings.  See the text for examples of its
+use. 
+
+#+name: initialize-new-exporter
+#+header: :tangle init-new.el
+#+header: :results silent
+#+header: :exports none
+#+begin_src emacs-lisp 
+  (add-to-list 'load-path "~/.emacs.d/src/org/contrib/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
+  
+  (require 'org-install)
+  (require 'org-export)
+  (require 'org-e-latex)
+  
+  ;; this line only required until the upcomming Org-mode/Emacs24 sync
+  (load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
+  
+  
+  ;; Configure Babel to support all languages included in the manuscript
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (org        . t)))
+  (setq org-confirm-babel-evaluate nil)
+  
+  ;; Configure Org-mode
+    (setq org-export-latex-hyperref-format "\\ref{%s}")
+    (setq org-entities-user nil) 
+    (add-to-list 'org-entities-user '("space" "\\ " nil " " " " " " " "))
+    (setq org-e-latex-pdf-process '("texi2dvi --clean --verbose --batch %f"))
+    (setq org-export-latex-packages-alist nil)
+    (add-to-list 'org-export-latex-packages-alist '("" "hyperref"))
+    (add-to-list 'org-export-latex-packages-alist '("" "graphicx"))
+
+    (require 'org-special-blocks)
+  
+  (org-add-link-type 
+     "cite" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "\\cite{%s}" path)))))
+  
+  (org-add-link-type 
+     "acm" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "{\\%s{%s}}" path desc)))))
+  
+  (add-to-list 'org-e-latex-classes
+                 '("acm-proc-article-sp"
+                   "\\documentclass{acm_proc_article-sp}
+                [NO-DEFAULT-PACKAGES]
+                [PACKAGES]
+                [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+** Initialization file for old exporter
+
+
+This source code block tangles the initialization file that configures
+the old Org-mode LaTeX exporter.
+
+You might need to change this for your system:
+   - Check =load-path= settings
+   - Make sure the languages used in your source code blocks have been
+     loaded with =org-babel-load-languages=
+
+An org-entity, =\space=, has been added, which can be used after a
+period that doesn't end a sentence, e.g., "Dr.\space Martin Luther King"
+
+A link type, =cite=, is defined for citations.  See the text for how
+to insert a citation.  Note that AucTeX and ebib can be configured to
+insert the citation correctly.
+
+A link type, =acm=, is defined to insert ACM-specific commands used to
+italicize words in section headings.  See the text for examples of its
+use. 
+
+#+name: initialize-old-exporter
+#+header: :tangle init-old.el
+#+header: :results silent
+#+header: :exports none
+#+begin_src emacs-lisp 
+  (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
+  
+  (require 'org-install)
+  (require 'org-latex)
+  
+  ;; this line only required until the upcomming Org-mode/Emacs24 sync
+  (load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
+  
+  
+  ;; Configure Babel to support all languages included in the manuscript
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (org        . t)))
+  (setq org-confirm-babel-evaluate nil)
+  
+  ;; Configure Org-mode
+    (setq org-export-latex-hyperref-format "\\ref{%s}")
+    (setq org-entities-user '(("space" "\\ " nil " " " " " " " ")))
+    (setq org-latex-to-pdf-process '("texi2dvi --clean --verbose --batch %f"))
+  
+    (require 'org-special-blocks)
+    (defun org-export-latex-no-toc (depth)  
+      (when depth
+        (format "%% Org-mode is exporting headings to %s levels.\n"
+                depth)))
+    (setq org-export-latex-format-toc-function 'org-export-latex-no-toc)
+    (setq org-export-pdf-remove-logfiles nil)
+  
+  (org-add-link-type 
+     "cite" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "\\cite{%s}" path)))))
+  
+  (org-add-link-type 
+     "acm" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "{\\%s{%s}}" path desc)))))
+  
+  (add-to-list 'org-export-latex-classes
+                 '("acm-proc-article-sp"
+                   "\\documentclass{acm_proc_article-sp}
+                [NO-DEFAULT-PACKAGES]
+                [EXTRA]
+                 \\usepackage{graphicx}
+                 \\usepackage{hyperref}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+** Configure makefile
+
+Configure the Makefile by supplying the correct string for your emacs
+application and the name of the initialization file.  Currently, this
+is setup to use the old exporter.  It will need to be modified to run
+the new exporter.
+
+Once this is done, evaluate the code block with C-c C-c to create a
+Makefile.  
+
+#+name: configure-makefile
+#+header: :file Makefile
+#+header: :var emacs="/Applications/Emacs-23-4.app/Contents/MacOS/Emacs"
+#+header: :var init-file="init-new.el"
+#+header: :var exporter="new"
+#+header: :eval noexport
+#+BEGIN_SRC emacs-lisp
+    (let ((f (file-name-sans-extension (file-name-nondirectory
+                                        (buffer-file-name))))
+          (g (if (string= exporter "old") "org-export-as-latex" "org-e-latex-export-to-latex")))
+       (format "CC=gcc
+    EMACS=%s
+    BATCH_EMACS=$(EMACS) --batch -Q -l %s %s
+    
+    all: %s.pdf
+    
+    %s.tex: %s.org\n\t$(BATCH_EMACS) -f %s
+    
+    %s.pdf: %s.tex\n\trm -f %s.aux\n\tif pdflatex %s.tex </dev/null; then \\\n\t\ttrue; \\\n\telse \\\n\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\tfi\n\tbibtex %s\n\twhile grep \"Rerun to get\" %s.log; do \\\n\t\tif pdflatex %s.tex </dev/null; then \\\n\t\t\ttrue; \\\n\t\telse \\\n\t\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\t\tfi; \\\n\tdone
+    
+    %s.ps: %s.pdf\n\tpdf2ps %s.pdf
+    
+    clean:\n\trm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out %s.pdf *.xml *.lot *.lof
+    " emacs init-file (file-name-nondirectory (buffer-file-name)) f f f g f f f f f f f f f f f f f))
+#+END_SRC
+
+#+RESULTS: configure-makefile
+[[file:Makefile]]
+
+** Run make
+#+name: run-make
+#+BEGIN_SRC sh
+make
+#+END_SRC
+
+#+RESULTS: run-make
+: /Applications/Emacs-23-4.app/Contents/MacOS/Emacs --batch -Q -l init-old.el sigproc-sp-org-new.org -f org-export-as-latex
+
+** General purpose lists
+
+This source code block takes a one-column table and a command name and
+outputs a LaTeX code block with the table contents as a comma
+separated list wrapped by the command.
+
+#+name: list-to-cs-string
+#+header: :var in-list=term-list
+#+header: :var in-command="terms"
+#+header: :results latex 
+#+header: :exports results
+#+BEGIN_SRC emacs-lisp
+(defun list-to-comma (the-list)
+  (let (
+        (return-string "")
+        )
+    (while (> (length the-list) 0)
+      (if (> (length return-string) 0)
+          (setq return-string (concat return-string ", " (car (car the-list))))
+        (setq return-string (car (car the-list)))  ;; else
+        )
+      (setq the-list (cdr the-list))
+      ) ;; end of "while"
+    return-string
+    ) ;; end of "let"
+    )
+(let (
+    (a (cdr (cdr in-list)))
+)
+(concat (format "\\%s{" in-command) (list-to-comma a) "}")
+)
+#+END_SRC
+
+#+RESULTS: list-to-cs-string
+#+BEGIN_LaTeX
+\terms{Theory}
+#+END_LaTeX
+
+** Author list
+In this sample file, there are a *total* of EIGHT authors. SIX appear
+on the 'first-page' (for formatting reasons) and the remaining two
+appear in the \additionalauthors section.
+
+The following table holds information about the author(s) of the
+document.  You can separate groups of authors with a blank line to
+change the layout.
+
+#+name: authorlist
+| author               | note                                                           | institute                              | addr1                    | addr2                    | email                         |
+|----------------------+----------------------------------------------------------------+----------------------------------------+--------------------------+--------------------------+-------------------------------|
+| Ben Trovato          | Dr.~Trovato insisted his name be first.                        | Institute for Clarity in Documentation | 1932 Wallamaloo Lane     | Wallamaloo, New Zealand  | trovato@corporation.com       |
+| G.K.M. Tobin         | The secretary disavows any knowledge of this author's actions. | Institute for Clarity in Documentation | P.O. Box 1212            | Dublin, Ohio 43017-6221  | webmaster@marysville-ohio.com |
+| Lars Th{\o}rv{\"a}ld | This author is the one who did all the really hard work.       | The Th{\o}rv{\"a}ld Group              | 1 Th{\o}rv{\"a}ld Circle | Hekla, Iceland           | larst@affiliation.org         |
+|                      |                                                                |                                        |                          |                          |                               |
+| Lawrence P. Leipuner |                                                                | Brookhaven Laboratories                | Brookhaven National Lab  | P.O. Box 5000            | lleipuner@reasearchlabs.org   |
+| Sean Fogarty         |                                                                | NASA Ames Research Center              | Moffett Field            | California 94035         | fogarty@amesres.org           |
+| Charles Palmer       |                                                                | Palmer Research Laboratories           | 8600 Datapoint Drive     | San Antonio, Texas 78229 | cpalmer@prl.com               |
+
+#+name: additional-authors
+| author            | institute                 | email                  |
+|-------------------+---------------------------+------------------------|
+| John Smith        | The Th{\o}rv{\"a}ld Group | jsmith@affiliation.org |
+| Julius P. Kumquat | The Kumquat Consortium    | jpkumquat@consortium   |
+
+** Category list
+
+The following table holds information about ACM categories.
+
+#+name: categories
+| code  | description                      | category      | optional                                  |
+|-------+----------------------------------+---------------+-------------------------------------------|
+| H.4   | Information Systems Applications | Miscellaneous |                                           |
+| D.2.8 | Software Engineering             | Metrics       | complexity measures, performance measures |
+
+** Term list
+
+This table is used as input to =list-to-cs-string= with the =theory= command.
+
+#+name: term-list
+| Term     |
+|----------|
+| Theory   |
+
+** Keyword list
+
+This table is used as input to =list-to-cs-string= with the =keyword= command.
+
+#+name: keyword-list
+| Keyword         |
+|-----------------|
+| ACM Proceedings |
+| \LaTeX          |
+| text tagging    |
+
+* Footnotes
+
+[fn:1] Two of these, the =\numberofauthors=
+and =\alignauthor= commands, you have
+already used; another, =\balancecolumns=, will
+be used in your very last run of LaTeX to ensure
+balanced column heights on the last page.
+
+[fn:2] This is the second footnote.  It
+starts a series of three footnotes that add nothing
+informational, but just give an idea of how footnotes work
+and look. It is a wordy one, just so you see
+how a longish one plays out.
+
+[fn:3] A third footnote, here.  Let's make this a rather short
+one to see how it looks.
+
+[fn:4] A fourth, and
+last, footnote.
+

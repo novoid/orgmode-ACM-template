@@ -1,0 +1,437 @@
+#+TITLE:
+#+LANGUAGE:  en
+#+OPTIONS: H:5 author:nil email:nil creator:nil timestamp:nil skip:nil toc:nil
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LaTeX_CLASS: acm-proc-article-sp
+* This headline needed for old exporter, delete just the headline with new exporter                                              
+
+# Replace the title and subtitle with your own
+#+BEGIN_LaTeX
+\title{A Sample {\ttlit ACM} SIG Proceedings Paper in Org-mode Format\titlenote{(Does NOT produce the permission block, copyright information nor page numbering). For use with ACM\_PROC\_ARTICLE-SP.CLS. Supported by ACM.}}
+\subtitle{[Extended Abstract]\titlenote{A full version of this paper is available as
+\textit{Author's Guide to Preparing ACM SIG Proceedings Using
+\LaTeX$2_\epsilon$\ and BibTeX} at
+\texttt{www.acm.org/eaddress.htm}}}
+#+END_LaTeX
+
+# Note that add-author-record isn't fully correct.  It formats a comma
+# separated list, when it should return a list with the final element
+# separated by "and".
+
+#+name: author-list
+#+header: :var authors=authorlist
+#+header: :var add-authors=additional-authors
+#+header: :results latex 
+#+header: :exports results
+#+BEGIN_SRC emacs-lisp
+    (defun author-record (r)
+      (if (> (length (first r)) 0)
+            (format "\\alignauthor\n%s\\titlenote{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\affaddr{%s}\\\\
+          \\email{%s}" (first r) (second r) (third r) (fourth r) (fifth r)
+          (sixth r))
+        "\\and")
+    )
+    
+  (defun non-empty (list)
+    (let ( (i 0))
+    (mapcar #'(lambda (elem)
+                (if (> (length (first elem)) 0)
+                  (incf i)))
+            list)
+    i)
+  )
+    
+    (defun add-author-record (r)
+      (format "%s (%s, email:
+        {\\texttt{%s}})" 
+              (first r) (second r) (third r)))
+    
+    (let ( (i (+ (non-empty (cdr (cdr authors))) (- (length add-authors) 2) ))
+           (a (mapcar (lambda (row)
+                        (author-record row)) 
+                      (cdr (cdr authors))))
+           (b (mapcar (lambda (row)
+                        (add-author-record row)) 
+                      (cdr (cdr add-authors))))
+           )
+      (concat
+       (format "\\numberofauthors{%s}\n\\author{\n" i)
+       (mapconcat 'identity a "\n")
+       "}"
+       (if (> (length add-authors) 0)
+           (concat "\n\\additionalauthors{Additional authors: "
+                   (mapconcat 'identity b ", ")
+                   ".}")
+         ())))
+          
+#+END_SRC
+
+\maketitle
+
+#+BEGIN_abstract
+#+END_abstract
+
+#+name: ACM-categories
+#+header: :var c=categories
+#+header: :results latex 
+#+header: :exports results
+#+BEGIN_SRC emacs-lisp
+  (defun category-record (r)
+    (format "\\category{%s}{%s}{%s}[%s]" 
+            (first r) (second r) (third r) (fourth r)))
+  (let ( (i (mapcar (lambda (row)
+            (category-record row))
+          (cdr (cdr c)))))
+     (mapconcat 'identity i "\n")
+)
+#+END_SRC
+
+
+#+CALL: list-to-cs-string(in-command="terms", in-list=term-list) :results latex :exports results
+
+#+CALL: list-to-cs-string(in-command="keywords", in-list=keyword-list) :results latex :exports results
+
+* First real headline, replace with your first headline
+
+# Additional headlines and content here
+
+\bibliographystyle{abbrv}
+# change bibliography name to suit
+\bibliography{sigproc}  
+
+\balancecolumns
+
+* Instructions for use                                             :noexport:
+
+This file provides a template for producing an ACM-SIG proceedings
+article from an Org-mode file.  Many of the LaTeX commands defined by
+the ACM-SIG class are generated on export by emacs-lisp source code
+blocks that use content read from Org-mode tables.  Authors,
+additional authors, terms, categories, and keywords are all handled
+this way.  Citations and italicized words in section heads are both
+handled with new Org-mode link types.
+
+Detailed instructions on how to use this template follow.
+  - Copy this file, preferably to an empty directory, and rename the
+    file appropriately.
+  - Ensure that the file =acm-proc-article-sp.cls= is either in the
+    same directory as the copied and renamed file, or that it is
+    installed somewhere your LaTeX installation can find.
+  - Tangle the initialization files, by entering C-c C-v t with the
+    cursor anywhere in this buffer.  This will tangle two
+    files, =init-old.el= and =init-new.el=, one for the old exporter
+    and one for the new exporter.
+  - Generate the [[Configure%20makefile][Makefile]], by placing the cursor in the source code
+    block and entering C-c C-c.  Depending on the values assigned to
+    its variables, this code will generate a Makefile suited for the
+    old exporter or the new exporter.
+  - Add author, additional author, keyword, term, and categories
+    information in the appropriate Org-mode tables.
+  - Write an abstract in the empty =#+BEGIN_abstract
+    ... #+END_abstract= block above.
+  - Write the ACM-SIG paper as an Org-mode file.  First level
+    headlines will be section heads, second level subsection heads, etc.
+  - In a terminal, change to the project directory and run =make=.
+    This will launch a new instance of emacs, initialize Org-mode,
+    export this file and create a pdf file in ACM-SIG format.
+
+* Setup                                                            :noexport:
+** Initialization files
+*** Initialization file for new exporter
+
+
+This source code block tangles the initialization file that configures
+the old Org-mode LaTeX exporter.
+
+You might need to change this for your system:
+   - Check =load-path= settings
+   - Make sure the languages used in your source code blocks have been
+     loaded with =org-babel-load-languages=
+
+An org-entity, =\space=, has been added, which can be used after a
+period that doesn't end a sentence, e.g., "Dr.\space Martin Luther King"
+
+A link type, =cite=, is defined for citations.  See the text for how
+to insert a citation.  Note that AucTeX and ebib can be configured to
+insert the citation correctly.
+
+A link type, =acm=, is defined to insert ACM-specific commands used to
+italicize words in section headings.  See the text for examples of its
+use. 
+
+#+name: initialize-new-exporter
+#+header: :tangle init-new.el
+#+header: :results silent
+#+header: :exports none
+#+begin_src emacs-lisp 
+  (add-to-list 'load-path "~/.emacs.d/src/org/contrib/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
+  
+  (require 'org-install)
+  (require 'org-export)
+  (require 'org-e-latex)
+  
+  ;; this line only required until the upcomming Org-mode/Emacs24 sync
+  (load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
+  
+  
+  ;; Configure Babel to support all languages included in the manuscript
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (org        . t)))
+  (setq org-confirm-babel-evaluate nil)
+  (setq toggle-debug-on-error t)
+  
+  ;; Configure Org-mode
+    (setq org-export-latex-hyperref-format "\\ref{%s}")
+    (setq org-entities-user nil) 
+    (add-to-list 'org-entities-user '("space" "\\ " nil " " " " " " " "))
+    (setq org-e-latex-pdf-process '("texi2dvi --clean --verbose --batch %f"))
+    (setq org-export-latex-packages-alist nil)
+    (add-to-list 'org-export-latex-packages-alist '("" "hyperref"))
+    (add-to-list 'org-export-latex-packages-alist '("" "graphicx"))
+
+    (require 'org-special-blocks)
+  
+  (org-add-link-type 
+     "cite" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "\\cite{%s}" path)))))
+  
+  (org-add-link-type 
+     "acm" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "{\\%s{%s}}" path desc)))))
+  
+  (add-to-list 'org-e-latex-classes
+                 '("acm-proc-article-sp"
+                   "\\documentclass{acm_proc_article-sp}
+                [NO-DEFAULT-PACKAGES]
+                [PACKAGES]
+                [EXTRA]"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+*** Initialization file for old exporter
+
+
+This source code block tangles the initialization file that configures
+the old Org-mode LaTeX exporter.
+
+You might need to change this for your system:
+   - Check =load-path= settings
+   - Make sure the languages used in your source code blocks have been
+     loaded with =org-babel-load-languages=
+
+An org-entity, =\space=, has been added, which can be used after a
+period that doesn't end a sentence, e.g., "Dr.\space Martin Luther King"
+
+A link type, =cite=, is defined for citations.  See the text for how
+to insert a citation.  Note that AucTeX and ebib can be configured to
+insert the citation correctly.
+
+A link type, =acm=, is defined to insert ACM-specific commands used to
+italicize words in section headings.  See the text for examples of its
+use. 
+
+#+name: initialize-old-exporter
+#+header: :tangle init-old.el
+#+header: :results silent
+#+header: :exports none
+#+begin_src emacs-lisp 
+  (add-to-list 'load-path "~/.emacs.d/src/org/lisp") ;; <- adjust
+  (add-to-list 'load-path "~/.emacs.d/src/org") ;; <- adjust
+  
+  (require 'org-install)
+  (require 'org-latex)
+  
+  ;; this line only required until the upcomming Org-mode/Emacs24 sync
+  (load "~/.emacs.d/src/org/lisp/org-exp-blocks.el")
+  
+  
+  ;; Configure Babel to support all languages included in the manuscript
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (org        . t)))
+  (setq org-confirm-babel-evaluate nil)
+  
+  ;; Configure Org-mode
+    (setq org-export-latex-hyperref-format "\\ref{%s}")
+    (setq org-entities-user '(("space" "\\ " nil " " " " " " " ")))
+    (setq org-latex-to-pdf-process '("texi2dvi --clean --verbose --batch %f"))
+  
+    (require 'org-special-blocks)
+    (defun org-export-latex-no-toc (depth)  
+      (when depth
+        (format "%% Org-mode is exporting headings to %s levels.\n"
+                depth)))
+    (setq org-export-latex-format-toc-function 'org-export-latex-no-toc)
+    (setq org-export-pdf-remove-logfiles nil)
+  
+  (org-add-link-type 
+     "cite" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "\\cite{%s}" path)))))
+  
+  (org-add-link-type 
+     "acm" nil
+     (lambda (path desc format)
+       (cond
+        ((eq format 'latex)
+               (format "{\\%s{%s}}" path desc)))))
+  
+  (add-to-list 'org-export-latex-classes
+                 '("acm-proc-article-sp"
+                   "\\documentclass{acm_proc_article-sp}
+                [NO-DEFAULT-PACKAGES]
+                [EXTRA]
+                 \\usepackage{graphicx}
+                 \\usepackage{hyperref}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
+
+** Configure Makefile
+
+Configure the Makefile by supplying the correct string for your emacs
+application and the name of the initialization file.  Currently, this
+is setup to use the old exporter.  It will need to be modified to run
+the new exporter.
+
+Once this is done, evaluate the code block with C-c C-c to create a
+Makefile.  
+
+#+name: configure-makefile
+#+header: :file Makefile
+#+header: :var emacs="/Applications/Emacs-23-4.app/Contents/MacOS/Emacs"
+#+header: :var init-file="init-new.el"
+#+header: :var exporter="new"
+#+header: :eval noexport
+#+BEGIN_SRC emacs-lisp
+    (let ((f (file-name-sans-extension (file-name-nondirectory
+                                        (buffer-file-name))))
+          (g (if (string= exporter "old") "org-export-as-latex" "org-e-latex-export-to-latex")))
+       (format "CC=gcc
+    EMACS=%s
+    BATCH_EMACS=$(EMACS) --batch -Q -l %s %s
+    
+    all: %s.pdf
+    
+    %s.tex: %s.org\n\t$(BATCH_EMACS) -f %s
+    
+    %s.pdf: %s.tex\n\trm -f %s.aux\n\tif pdflatex %s.tex </dev/null; then \\\n\t\ttrue; \\\n\telse \\\n\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\tfi\n\tbibtex %s\n\twhile grep \"Rerun to get\" %s.log; do \\\n\t\tif pdflatex %s.tex </dev/null; then \\\n\t\t\ttrue; \\\n\t\telse \\\n\t\t\tstat=$$?; touch %s.pdf; exit $$stat; \\\n\t\tfi; \\\n\tdone
+    
+    %s.ps: %s.pdf\n\tpdf2ps %s.pdf
+    
+    clean:\n\trm -f *.aux *.log  *.dvi *.blg *.bbl *.toc *.tex *~ *.out %s.pdf *.xml *.lot *.lof
+    " emacs init-file (file-name-nondirectory (buffer-file-name)) f f f g f f f f f f f f f f f f f))
+#+END_SRC
+
+#+RESULTS: configure-makefile
+[[file:Makefile]]
+
+* Content tables                                                   :noexport:
+Fill the following tables.
+** Author list
+In this sample file, there are a *total* of EIGHT authors. SIX appear
+on the 'first-page' (for formatting reasons) and the remaining two
+appear in the \additionalauthors section.
+
+The following table holds information about the author(s) of the
+document.  You can separate groups of authors with a blank line to
+change the layout.
+
+#+name: authorlist
+| author               | note                                                           | institute                              | addr1                    | addr2                    | email                         |
+|----------------------+----------------------------------------------------------------+----------------------------------------+--------------------------+--------------------------+-------------------------------|
+
+#+name: additional-authors
+| author            | institute                 | email                  |
+|-------------------+---------------------------+------------------------|
+
+** Category list
+
+The following table holds information about ACM categories.
+
+#+name: categories
+| code  | description                      | category      | optional                                  |
+|-------+----------------------------------+---------------+-------------------------------------------|
+
+** Term list
+
+This table is used as input to =list-to-cs-string= with the =theory= command.
+
+#+name: term-list
+| Term     |
+|----------|
+
+
+** Keyword list
+
+This table is used as input to =list-to-cs-string= with the =keyword= command.
+
+#+name: keyword-list
+| Keyword         |
+|-----------------|
+
+* Source code                                                      :noexport:
+You shouldn't need to alter anything here.
+** General purpose lists
+
+This source code block takes a one-column table and a command name and
+outputs a LaTeX code block with the table contents as a comma
+separated list wrapped by the command.
+
+#+name: list-to-cs-string
+#+header: :var in-list=term-list
+#+header: :eval noexport
+#+header: :var in-command="terms"
+#+header: :results latex 
+#+header: :exports results
+#+BEGIN_SRC emacs-lisp
+(defun list-to-comma (the-list)
+  (let (
+        (return-string "")
+        )
+    (while (> (length the-list) 0)
+      (if (> (length return-string) 0)
+          (setq return-string (concat return-string ", " (car (car the-list))))
+        (setq return-string (car (car the-list)))  ;; else
+        )
+      (setq the-list (cdr the-list))
+      ) ;; end of "while"
+    return-string
+    ) ;; end of "let"
+    )
+(let (
+    (a (cdr (cdr in-list)))
+)
+(concat (format "\\%s{" in-command) (list-to-comma a) "}")
+)
+#+END_SRC
+
+#+RESULTS: list-to-cs-string
+#+BEGIN_LaTeX
+\terms{Theory}
+#+END_LaTeX
+

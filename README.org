@@ -17,7 +17,46 @@ http://www.acm.org/sigs/publications/proceedings-templates
 The template should be as much self-containing as possible. So no
 special settings required in ~$HOME/.emacs~
 
+The file =ACM-template.org= contains everything needed to produce the
+ACM paper from an Org-mode file.  It tangles initialization files for
+the new exporter and the old exporter.  It writes a Makefile that:
+  - launches a fresh instance of Emacs,
+  - loads the selected initialization file,
+  - then processes the Org-mode file that generated it.
+ 
+The file =sigproc-sp-org-new.org= contains the ACM-SIG LaTeX sample in
+Org-mode. The LaTeX output from Org-mode comes close to reproducing
+the original, but with a few deviations.  The new exporter looks like
+it will be capable of generating a LaTeX file that doesn't need to be
+tweaked. 
+
+* Files
+  - =ACM-template.org= is the template you'll use to start a new paper
+  - =README.org= is this file
+  - =acm_proc_article-sp.cls= is the ACM-SIG LaTeX class file
+  - =flies.eps= is a graphic used by =sigproc-sp-org-new.org= and =sigproc-sp.tex=
+  - =fly.eps= is a graphic used by =sigproc-sp-org-new.org= and =sigproc-sp.tex=
+  - =sigproc-sp-org-new.org= is the ACM-SIG example file translated
+    into Org-mode
+  - =sigproc-sp.tex= is the ACM-SIG example file
+  - =sigproc.bib= is the bibliography file used by =sigproc-sp-org-new.org= and =sigproc-sp.tex=
 * Issues
 
-- Karl 2012-04-25: new Org-mode export does nothing but writing
-  "org-splice-latex-header: Wrong type argument: stringp, nil"
+  - Karl 2012-04-25: new Org-mode export does nothing but writing
+    "org-splice-latex-header: Wrong type argument: stringp, nil"
+
+    - Tom 2012-05-06: this is fixed now
+
+  - Tom 2012-05-06: old exporter requires a headline before the first
+    source code block.
+
+  - Tom 2012-05-06: new exporter has a known bug that inserts source
+    code header information after the source code block disappears, as
+    it does with :exports results
+
+  - Tom 2012-05-06: the list of additional authors doesn't separate the
+    last author in the list with "and"
+
+  - Tom 2012-05-06: the ACM latex class command \titlenote{} doesn't
+    appear to work 
+
